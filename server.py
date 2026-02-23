@@ -9,6 +9,7 @@ from urllib import request, error
 
 BASE_DIR = Path(__file__).resolve().parent
 INDEX_FILE = BASE_DIR / "index.html"
+ENV_FILE = BASE_DIR / ".env"
 
 ALLOWED_EXT = {"jpeg", "jpg", "png", "webp", "pdf", "doc", "docx", "xls", "xlsx", "txt", "csv"}
 MAX_FILE_BYTES = 20 * 1024 * 1024
@@ -18,6 +19,23 @@ MODEL_MAP = {
     "gemini": {"gemini-2.0-flash", "gemini-1.5-pro"},
     "claude": {"claude-3-5-sonnet", "claude-3-haiku"},
 }
+
+
+def load_env_file(env_path: Path):
+    if not env_path.exists():
+        return
+
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+
+        if key and key not in os.environ:
+            os.environ[key] = value
 
 
 def json_response(handler, status, payload):
@@ -220,6 +238,8 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 def run():
+    load_env_file(ENV_FILE)
+
     host = "0.0.0.0"
     port = int(os.getenv("PORT", "8000"))
     server = ThreadingHTTPServer((host, port), AppHandler)

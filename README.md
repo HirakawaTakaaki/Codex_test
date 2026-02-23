@@ -13,6 +13,14 @@ ChatGPT / Gemini / Claude のいずれかを選択し、文章・ファイルを
 
 ## 起動方法
 
+1. `.env.example` をコピーして `.env` を作成し、必要なAPIキーを設定します。
+
+```bash
+cp .env.example .env
+```
+
+2. サーバーを起動します。
+
 ```bash
 python3 server.py
 ```
@@ -20,11 +28,15 @@ python3 server.py
 - デフォルトは `http://127.0.0.1:8000`
 - `PORT` 環境変数で変更できます。
 
-## APIキー環境変数
+## APIキー設定（.env）
+
+`.env` に以下を記述してください。
 
 - ChatGPT: `OPENAI_API_KEY`
 - Gemini: `GEMINI_API_KEY`
 - Claude: `ANTHROPIC_API_KEY`
+
+`server.py` 起動時に `.env` を読み込みます。シェルで既に同名の環境変数がある場合は、その値を優先します。
 
 未設定の場合はモック応答を返します。
 
